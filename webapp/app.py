@@ -1,26 +1,13 @@
 from flask import Flask, render_template, request
 from flask_cors import CORS
 import socket
-import struct
 
 
-def send_byte(sock, byte):
-    sock.send(struct.pack("B", byte))
-
-
-CMD_FIELD_LEN = 1  # 1 byte commands sent from the client.
 CONNECT_TIMEOUT = 10
 
 SERVER_PORT = 50001
 SERVER_ADDRESS = "0.0.0.0"
 ADDRESS_PORT = (SERVER_ADDRESS, SERVER_PORT)
-
-CMD = {
-    "burst": 1,
-    "burst++": 2,
-    "uphill_burst": 3,
-    "uphill_burst++": 4
-}
 
 
 def connect_to_server():
@@ -49,9 +36,6 @@ def buttonClicked():
     if button == 'button1':
         # execute function for Burst button
 
-        # Create the packet cmd field.
-        cmd_field = CMD["burst"].to_bytes(CMD_FIELD_LEN, byteorder='big')
-
         # Send a single byte of data
         data = b'\x31'  # ASCII code for 'A'
         send_socket.sendall(data)
@@ -60,9 +44,6 @@ def buttonClicked():
         print('Burst button pressed')
     elif button == 'button2':
         # execute function for Button 2
-
-        # Create the packet cmd field.
-        cmd_field = CMD["burst++"].to_bytes(CMD_FIELD_LEN, byteorder='big')
 
         # Send a single byte of data
         data = b'\x32'  # ASCII code for 'A'
@@ -73,9 +54,6 @@ def buttonClicked():
     elif button == 'button3':
         # execute function for Button 3
 
-        # Create the packet cmd field.
-        cmd_field = CMD["uphill_burst"].to_bytes(CMD_FIELD_LEN, byteorder='big')
-
         # Send a single byte of data
         data = b'\x33'  # ASCII code for 'A'
         send_socket.sendall(data)
@@ -85,15 +63,21 @@ def buttonClicked():
     elif button == 'button4':
         # execute function for Button 4
 
-        # Create the packet cmd field.
-        cmd_field = CMD["uphill_burst++"].to_bytes(CMD_FIELD_LEN, byteorder='big')
-
         # Send a single byte of data
         data = b'\x34'  # ASCII code for 'A'
         send_socket.sendall(data)
         print(f"Sent {len(data)} bytes of data: {data[0]}")
 
         print('Uphill Burst++ pressed')
+    elif button == 'button5':
+        # execute function for Button 5
+
+        # Send a single byte of data
+        data = b'\x35'  # ASCII code for 'A'
+        send_socket.sendall(data)
+        print(f"Sent {len(data)} bytes of data: {data[0]}")
+
+        print('STOP pressed')
     return 'Button clicked: ' + button
 
 
