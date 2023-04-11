@@ -72,6 +72,8 @@ int read_byte(int socket) {
 int main() {
     drive(0.0);
 
+    create_listen_socket(50001);
+
     while (true) {
         drive(0.1);
 

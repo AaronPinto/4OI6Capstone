@@ -8,7 +8,7 @@ namespace ctre {
 namespace phoenix {
 /** tasking namespace */
 namespace tasking {
-/** schedulers namespace */
+/** Schedulers namespace */
 namespace schedulers {
 
 /**
