@@ -14,7 +14,6 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 
 find_package(Threads REQUIRED)
-find_package(SDL2 REQUIRED)
 
 # The following folder will be included
 include_directories("${PROJECT_SOURCE_DIR}/include")
@@ -33,7 +32,6 @@ target_link_libraries(main ${PHOENIX_LIBS_DIR}/libCTRE_Phoenix.so)
 target_link_libraries(main ${PHOENIX_LIBS_DIR}/libCTRE_PhoenixCCI.so)
 
 target_link_libraries(main Threads::Threads)
-target_link_libraries(main ${SDL2_LIBRARIES})
 
 add_custom_command(TARGET main POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory

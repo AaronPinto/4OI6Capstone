@@ -4,7 +4,6 @@
 #include "ctre/phoenix/cci/Unmanaged_CCI.h"
 #include "ctre/phoenix/platform/Platform.h"
 #include "ctre/phoenix/unmanaged/Unmanaged.h"
-#include <SDL2/SDL.h>
 #include <chrono>
 #include <iostream>
 #include <netinet/in.h>
@@ -81,6 +80,5 @@ int main() {
         sleepApp(20);
     }
 
-    SDL_Quit();
     return 0;
 }
