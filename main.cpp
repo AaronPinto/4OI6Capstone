@@ -5,15 +5,13 @@
 #include "ctre/phoenix/platform/Platform.h"
 #include "ctre/phoenix/unmanaged/Unmanaged.h"
 #include <chrono>
+#include <fcntl.h>
 #include <iostream>
 #include <netinet/in.h>
 #include <string>
 #include <sys/socket.h>
 #include <thread>
 #include <unistd.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <fcntl.h>
 
 using namespace ctre::phoenix;
 using namespace ctre::phoenix::platform;
@@ -44,21 +42,21 @@ void create_listen_socket(int port) {
     setsockopt(listen_socket, SOL_SOCKET, SO_REUSEADDR, &reuse_addr, sizeof(reuse_addr));
 
     // Bind the socket to the address and port
-    struct sockaddr_in address{};
+    struct sockaddr_in address {};
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = htonl(INADDR_ANY);
     address.sin_port = htons(port);
-    bind(listen_socket, (struct sockaddr*)&address, sizeof(address));
+    bind(listen_socket, (struct sockaddr *) &address, sizeof(address));
 
     // Listen for incoming connections
     listen(listen_socket, SOMAXCONN);
 }
 
 int accept_client() {
-    struct sockaddr_in client_addr;
+    struct sockaddr_in client_addr {};
     socklen_t client_addr_len = sizeof(client_addr);
     int client_socket = accept(listen_socket, (struct sockaddr *) &client_addr, &client_addr_len);
-    
+
     if (client_socket < 0) {
         // handle error
         return -1;
@@ -90,7 +88,7 @@ int read_byte() {
         return 0;
     } else {
         // Return the byte as an integer
-        return (int)buffer[0];
+        return (int) buffer[0];
     }
 }
 
@@ -109,7 +107,7 @@ int main() {
         usleep(1000);
     }
 
-     while (true) {
+    while (true) {
         int byte = read_byte();
         if (byte == -1) {
             // Error reading from socket
@@ -123,7 +121,7 @@ int main() {
             printf("byte received is %d", byte);
         }
     }
-    
+
 
     // while (true) {
     //     drive(0.1);
