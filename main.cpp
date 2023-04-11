@@ -64,25 +64,28 @@ int create_connect_socket() {
 
     printf("Accepted connection from %s:%d\n", inet_ntoa(client_address.sin_addr), ntohs(client_address.sin_port));
 
+    // set socket to non-blocking
+    fcntl(client_socket, F_SETFL, O_NONBLOCK);
+
     return client_socket;
 }
 
 int receive_byte(int client_socket, char *buffer) {
     // receive a single byte of data
-    int bytes_received = recv(client_socket, buffer, BUFFER_SIZE, 0);
+    int bytes_received = recv(client_socket, buffer, BUFFER_SIZE, MSG_DONTWAIT);
 
     if (bytes_received < 0) {
         // handle error
-        perror("Error receiving data");
+        // perror("Error receiving data");
         return -1;
     } else if (bytes_received == 0) {
         // handle connection closed by remote peer
-        printf("Connection closed by remote peer\n");
+        // printf("Connection closed by remote peer\n");
         return -1;
     } else {
         // do something with the received data
-        printf("Received %d bytes of data: %d\n", bytes_received, buffer[0] - 48);
-        return buffer[0] - 48;
+        // printf("Received %d bytes of data: %d\n", bytes_received, buffer[0] - 49);
+        return buffer[0] - 49;
     }
 }
 
