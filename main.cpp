@@ -84,6 +84,7 @@ int receive_byte(int client_socket, char *buffer) {
 
 
 int main() {
+    configureMotor();
     drive(0.0);
 
     int client_socket = create_connect_socket();
