@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>My Web App</title>
+    <script>
+        function onClick(buttonId) {
+            var buttons = document.querySelectorAll('.button');
+            buttons.forEach(function (button) {
+                button.classList.remove('active');
+            });
+            var button = document.getElementById(buttonId);
+            button.classList.add('active');
+            setTimeout(function () {
+                button.classList.remove('active');
+            }, 2000);
+
+            var xhttp = new XMLHttpRequest();
+            xhttp.open("POST", "/button-clicked", true);
+            xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xhttp.send(JSON.stringify({ button: buttonId }));
+        }
+    </script>    
+    <style>
+        .button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 165px;
+            height: 125px;
+            background-color: #e6e6e6;
+            border-radius: 10px;
+            margin: 10px;
+            text-align: center;
+            font-size: 30px;
+        }
+
+        .button.active  {
+            background-color: #21e031;
+        }
+
+        .button-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            height: 45%;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin-bottom: 20px;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .title {
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+            font-size: 40px;
+            color: #333;
+        }
+    </style>
+  </head>
+  <body>
+    <h1 class="title">B.A.R.E. Bike</h1>
+    <div class="button-grid">
+      <div class="button" id="button1" onclick="onClick('button1')">
+        Burst
+      </div>
+      <div class="button" id="button2" onclick="onClick('button2')">
+        Burst++
+      </div>
+      <div class="button" id="button3" onclick="onClick('button3')">
+        Uphill Burst
+      </div>
+      <div class="button" id="button4" onclick="onClick('button4')">
+        Uphill Burst++
+      </div>
+    </div>
+  </body>
+</html>
