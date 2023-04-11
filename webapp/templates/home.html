@@ -14,7 +14,7 @@
             button.classList.add('active');
             setTimeout(function () {
                 button.classList.remove('active');
-            }, 2000);
+            }, 5000);
 
             var xhttp = new XMLHttpRequest();
             xhttp.open("POST", "/button-clicked", true);
@@ -35,6 +35,28 @@
             text-align: center;
             font-size: 30px;
         }
+
+        .stop_button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 250px;
+            height: 150px;
+            background-color: #ff0000;
+            border-radius: 10px;
+            margin: 10px;
+            text-align: center;
+            font-size: 45px;
+            color: #ffffff
+        }
+
+        .stop_container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 20vh; /* sets the height of the container to the full height of the viewport */
+        }
+
 
         .button.active  {
             background-color: #21e031;
@@ -92,6 +114,12 @@
         BATTERY HEALTH: HIGH
     </div>
     <h1 class="title">B.A.R.E. Bike</h1>
+    </div>
+    <div class="stop_container">
+        <div class="stop_button" id="button5" onclick="onClick('button5')">
+            STOP MOTOR
+        </div>
+    </div>
     <div class="button-grid">
       <div class="button" id="button1" onclick="onClick('button1')">
         Burst
