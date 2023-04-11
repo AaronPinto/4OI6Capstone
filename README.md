@@ -10,7 +10,7 @@ Note: Requires libsdl2-dev (sudo apt-get install libsdl2-dev) for USB Gamepad in
 Note: There is no more FRC versus nonFRC firmware.  Latest Talon/Victor firmware works for both use cases.
 
 Simple example here, we use libSDL2 to get gamepad values...
-- [example.cpp](example.cpp)
+- [main.cpp](main.cpp)
 
 Library binaries here
 - [Raspberry PI (linux-armhf) ](lib/raspberry)
@@ -141,29 +141,6 @@ The Phoenix Diagnostics Server is an HTTP server that communicates with the Phoe
 a standalone version installed through Phoenix Tuner (legacy), and a version built into your user program (latest). Only one version of
 the diagnostics server may be running at any given time. We recommend you run the diagnostics server through your user program.
 
-You can disable the diagnostics server in your program by adding ``c_SetPhoenixDiagnosticsStartTime(-1);`` to the start
-of your main method. The line is commented out in the example program.
-
-Warning: The instructions below are available for legacy support. We recommend you instead run the Phoenix Diagnostics Server in your user program.
-
-Warning: The legacy instructions below currently do not work. See: https://github.com/CrossTheRoadElec/Phoenix-Linux-SocketCAN-Example/issues/15
-
-<s>
-
-To install the standalone diagnostics server:
-1. Click `Install Phoenix Library/Diagnostics`.
-2. Enter your username and password when prompted. (**Note: The user must have sudo permissions to successfully install Tuner** ).  
-	(To find your username look at the text before the `@` in the terminal for example in this terminal the user is `ctre`. ).  
-	![image](https://user-images.githubusercontent.com/51933047/63195027-7fbbd680-c03f-11e9-9e5e-c310d0eebff4.PNG)
-3. Tuner will then install and start the diagnostics server on the device.
-4. The diagnostics server is now installed and running on your device.
-
-</s>
-
 * See https://phoenix-documentation.readthedocs.io/en/latest/ch08_BringUpCAN.html?highlight=field%20upgrade#field-upgrade-devices for information about field upgrading your devices to the latest version.
 * Once connected see  https://phoenix-documentation.readthedocs.io/en/latest/ch13_MC.html?highlight=frc%20lock#confirm-frc-unlock
 to confirm the device you are using is not frc locked.
-
-
-#### Errata: The wireless Logitech F710 is currently not supported on the Nvidia Jetson Nano due to a driver issue.
-

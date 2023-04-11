@@ -1,5 +1,5 @@
 # Project's name
-PROJECT(example C CXX)
+PROJECT(main C CXX)
 
 # Specify the minimum version for CMake
 
@@ -19,7 +19,7 @@ find_package(SDL2 REQUIRED)
 # The following folder will be included
 include_directories("${PROJECT_SOURCE_DIR}/include")
 
-add_executable(example ${PROJECT_SOURCE_DIR}/example.cpp)
+add_executable(main ${PROJECT_SOURCE_DIR}/main.cpp)
 
 if (${CMAKE_LIBRARY_ARCHITECTURE} STREQUAL "arm-linux-gnueabihf") # Jetson TK1 / Pi
     set(PHOENIX_LIBS_DIR ${CMAKE_SOURCE_DIR}/lib/raspberry)
@@ -29,13 +29,13 @@ else ()
     set(PHOENIX_LIBS_DIR ${CMAKE_SOURCE_DIR}/lib/x86-64)
 endif ()
 
-target_link_libraries(example ${PHOENIX_LIBS_DIR}/libCTRE_Phoenix.so)
-target_link_libraries(example ${PHOENIX_LIBS_DIR}/libCTRE_PhoenixCCI.so)
+target_link_libraries(main ${PHOENIX_LIBS_DIR}/libCTRE_Phoenix.so)
+target_link_libraries(main ${PHOENIX_LIBS_DIR}/libCTRE_PhoenixCCI.so)
 
-target_link_libraries(example Threads::Threads)
-target_link_libraries(example ${SDL2_LIBRARIES})
+target_link_libraries(main Threads::Threads)
+target_link_libraries(main ${SDL2_LIBRARIES})
 
-add_custom_command(TARGET example POST_BUILD
+add_custom_command(TARGET main POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${PHOENIX_LIBS_DIR}
-        $<TARGET_FILE_DIR:example>)
+        $<TARGET_FILE_DIR:main>)
