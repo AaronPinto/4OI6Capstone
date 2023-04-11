@@ -11,10 +11,19 @@
                 button.classList.remove('active');
             });
             var button = document.getElementById(buttonId);
-            button.classList.add('active');
-            setTimeout(function () {
-                button.classList.remove('active');
-            }, 5000);
+            // button.classList.add('active');
+
+            if (buttonId === 'button1' || buttonId === 'button3') {
+                button.classList.add('active');
+                setTimeout(function () {
+                    button.classList.remove('active');
+                }, 3000);
+            } else {
+                button.classList.add('active');
+                setTimeout(function () {
+                    button.classList.remove('active');
+                }, 6000);
+            }
 
             var xhttp = new XMLHttpRequest();
             xhttp.open("POST", "/button-clicked", true);
