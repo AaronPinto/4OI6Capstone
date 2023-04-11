@@ -19,11 +19,14 @@ using namespace ctre::phoenix;
 using namespace ctre::phoenix::platform;
 using namespace ctre::phoenix::motorcontrol;
 using namespace ctre::phoenix::motorcontrol::can;
+using Clock = std::chrono::steady_clock;
 
 TalonSRX cimMotor(1); // Use the specified interface
 
 void configureMotor() {
-    cimMotor.ConfigOpenloopRamp(2.0);
+    cimMotor.ConfigOpenloopRamp(5.0);
+    cimMotor.SetNeutralMode(NeutralMode::Coast);
+    cimMotor.ConfigNeutralDeadband(0.01);
 }
 
 void drive(double fwd) {
@@ -88,26 +91,62 @@ int main() {
     drive(0.0);
 
     int client_socket = create_connect_socket();
+
     char buffer[BUFFER_SIZE];
 
-    while (true) {
-        int bytes_received = receive_byte(client_socket, buffer);
+    int current_state = 4;
+    int wanted_state;
 
-        switch (bytes_received) {
-            case 0:
-                std::cout << "Burst" << std::endl;
+    auto start = Clock::now();
+    auto duration = 3000; // milliseconds
+    auto extended_duration = 6000; // milliseconds
+
+    while (true) {
+        wanted_state = receive_byte(client_socket, buffer);
+
+        if (wanted_state != -1) {
+            if (current_state != wanted_state) {
+                current_state = wanted_state;
+                start = Clock::now();
+            }
+        }
+
+        auto delta = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - start).count();
+
+        switch (current_state) {
+            case 0: // Burst
+                drive(0.05);
+
+                if (delta > duration) {
+                    std::cout << "Done Burst" << std::endl;
+                    current_state = 4;
+                }
                 break;
-            case 1:
-                std::cout << "Burst++" << std::endl;
+            case 1: // Burst++
+                drive(0.07);
+
+                if (delta > extended_duration) {
+                    std::cout << "Done Burst++" << std::endl;
+                    current_state = 4;
+                }
                 break;
-            case 2:
-                std::cout << "Uphill" << std::endl;
+            case 2: // Uphill Burst
+                drive(0.1);
+
+                if (delta > duration) {
+                    std::cout << "Done Uphill Burst" << std::endl;
+                    current_state = 4;
+                }
                 break;
-            case 3:
-                std::cout << "Uphill++" << std::endl;
+            case 3: // Uphill Burst++
+                drive(0.12);
+
+                if (delta > extended_duration) {
+                    std::cout << "Done Uphill Burst++" << std::endl;
+                    current_state = 4;
+                }
                 break;
-            case 4:
-                std::cout << "STOP" << std::endl;
+            case 4: // Stop Motor
                 drive(0.0);
                 break;
             default:
