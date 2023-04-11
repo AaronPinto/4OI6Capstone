@@ -74,17 +74,10 @@ int receive_byte(int client_socket, char *buffer) {
     // receive a single byte of data
     int bytes_received = recv(client_socket, buffer, BUFFER_SIZE, MSG_DONTWAIT);
 
-    if (bytes_received < 0) {
-        // handle error
-        // perror("Error receiving data");
-        return -1;
-    } else if (bytes_received == 0) {
-        // handle connection closed by remote peer
-        // printf("Connection closed by remote peer\n");
+    if (bytes_received < 0 || bytes_received == 0) {
         return -1;
     } else {
         // do something with the received data
-        // printf("Received %d bytes of data: %d\n", bytes_received, buffer[0] - 49);
         return buffer[0] - 49;
     }
 }
