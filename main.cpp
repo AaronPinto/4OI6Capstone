@@ -10,6 +10,8 @@
 #include <string>
 #include <thread>
 #include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 
 using namespace ctre::phoenix;
 using namespace ctre::phoenix::platform;
@@ -26,6 +28,45 @@ void drive(double fwd) {
 /** simple wrapper for code cleanup */
 void sleepApp(int ms) {
     std::this_thread::sleep_for(std::chrono::milliseconds(ms));
+}
+
+// Function to create a TCP listen socket
+int create_listen_socket(int port) {
+    // Create a TCP listen socket
+    int listen_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+    // Set the SO_REUSEADDR option to reuse the address
+    int reuse_addr = 1;
+    setsockopt(listen_socket, SOL_SOCKET, SO_REUSEADDR, &reuse_addr, sizeof(reuse_addr));
+
+    // Bind the socket to the address and port
+    struct sockaddr_in address;
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = htonl(INADDR_ANY);
+    address.sin_port = htons(port);
+    bind(listen_socket, (struct sockaddr*)&address, sizeof(address));
+
+    // Listen for incoming connections
+    listen(listen_socket, SOMAXCONN);
+
+    return listen_socket;
+}
+
+// Function to read one byte from a socket and return it as an int
+int read_byte(int socket) {
+    // Buffer to store the byte read from the socket
+    unsigned char buffer[1];
+
+    // Read one byte from the socket
+    ssize_t bytes_read = read(socket, buffer, sizeof(buffer));
+
+    // If read was successful, return the byte as an int
+    if (bytes_read == sizeof(buffer)) {
+        return (int)buffer[0];
+    }
+
+    // If read failed or returned less than one byte, return -1 to indicate an error
+    return -1;
 }
 
 int main() {
