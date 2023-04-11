@@ -40,7 +40,7 @@ int create_listen_socket(int port) {
     setsockopt(listen_socket, SOL_SOCKET, SO_REUSEADDR, &reuse_addr, sizeof(reuse_addr));
 
     // Bind the socket to the address and port
-    struct sockaddr_in address;
+    struct sockaddr_in address{};
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = htonl(INADDR_ANY);
     address.sin_port = htons(port);
@@ -75,7 +75,7 @@ int main() {
     while (true) {
         drive(0.1);
 
-        /* loop yield for a bit */
+        // loop yield for a bit
         sleepApp(20);
     }
 
