@@ -1,4 +1,5 @@
 #define Phoenix_No_WPI // remove WPI dependencies
+#define BUFFER_SIZE 1
 
 #include "ctre/Phoenix.h"
 #include "ctre/phoenix/cci/Unmanaged_CCI.h"
@@ -12,6 +13,7 @@
 #include <sys/socket.h>
 #include <thread>
 #include <unistd.h>
+#include <arpa/inet.h>
 
 using namespace ctre::phoenix;
 using namespace ctre::phoenix::platform;
@@ -30,105 +32,83 @@ void sleepApp(int ms) {
     std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 }
 
-int listen_socket;
+int create_connect_socket() {
+    int server_socket, client_socket;
+    struct sockaddr_in server_address, client_address;
+    socklen_t client_address_size = sizeof(client_address);
+    char buffer[BUFFER_SIZE];
 
-// Function to create a TCP listen socket
-void create_listen_socket(int port) {
-    // Create a TCP listen socket
-    listen_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    // create the server socket
+    server_socket = socket(AF_INET, SOCK_STREAM, 0);
 
-    // Set the SO_REUSEADDR option to reuse the address
-    int reuse_addr = 1;
-    setsockopt(listen_socket, SOL_SOCKET, SO_REUSEADDR, &reuse_addr, sizeof(reuse_addr));
+    // set up the server address
+    server_address.sin_family = AF_INET;
+    server_address.sin_addr.s_addr = htonl(INADDR_ANY);
+    server_address.sin_port = htons(50001);
 
-    // Bind the socket to the address and port
-    struct sockaddr_in address {};
-    address.sin_family = AF_INET;
-    address.sin_addr.s_addr = htonl(INADDR_ANY);
-    address.sin_port = htons(port);
-    bind(listen_socket, (struct sockaddr *) &address, sizeof(address));
+    // bind the socket to the server address
+    bind(server_socket, (struct sockaddr*)&server_address, sizeof(server_address));
 
-    // Listen for incoming connections
-    listen(listen_socket, SOMAXCONN);
+    // listen for incoming connections
+    listen(server_socket, 5);
+
+    printf("Listening on port %d\n", ntohs(server_address.sin_port));
+
+    // accept the client connection
+    client_socket = accept(server_socket, (struct sockaddr*)&client_address, &client_address_size);
+
+    printf("Accepted connection from %s:%d\n", inet_ntoa(client_address.sin_addr), ntohs(client_address.sin_port));
+
+    return client_socket;
 }
 
-int accept_client() {
-    struct sockaddr_in client_addr {};
-    socklen_t client_addr_len = sizeof(client_addr);
-    int client_socket = accept(listen_socket, (struct sockaddr *) &client_addr, &client_addr_len);
+int receive_byte(int client_socket, char* buffer) {
+    // receive a single byte of data
+    int bytes_received = recv(client_socket, buffer, BUFFER_SIZE, 0);
 
-    if (client_socket < 0) {
+    if (bytes_received < 0) {
         // handle error
-        return -1;
-    }
-
-    // set socket to non-blocking
-    int flags = fcntl(client_socket, F_GETFL, 0);
-    if (flags == -1) {
-        // handle error
-        return -1;
-    }
-    if (fcntl(client_socket, F_SETFL, flags | O_NONBLOCK) == -1) {
-        // handle error
-        return -1;
-    }
-
-    return 1;
-}
-
-// Function to read a single byte from a non-blocking socket
-int read_byte() {
-    char buffer[1];
-    int bytes_read = read(listen_socket, buffer, 1);
-    if (bytes_read == -1) {
-        // Error reading from socket
-        return -1;
-    } else if (bytes_read == 0) {
-        // No data available
-        return 0;
+        perror("Error receiving data");
+        exit(1);
+    } else if (bytes_received == 0) {
+        // handle connection closed by remote peer
+        printf("Connection closed by remote peer\n");
+        exit(1);
     } else {
-        // Return the byte as an integer
-        return (int) buffer[0];
+        // do something with the received data
+        printf("Received %d bytes of data: %d\n", bytes_received, buffer[0]-48);
+        return (buffer[0]-48);
     }
 }
+
 
 int main() {
-    drive(0.0);
-
-    create_listen_socket(50001);
-
-    int client_conn = -1;
-
-    while (client_conn < 0) {
-        // accept client connection
-        accept_client();
-
-        // wait a bit before trying again
-        usleep(1000);
-    }
+    int client_socket = create_connect_socket();
+    char buffer[BUFFER_SIZE];
 
     while (true) {
-        int byte = read_byte();
-        if (byte == -1) {
-            // Error reading from socket
-            break;
-        } else if (byte == 0) {
-            // No data available, continue loop
-            continue;
-        } else {
-            // Data available, do something with the byte
-            // ...
-            printf("byte received is %d", byte);
-        }
+        // receive a single byte of data
+        // int bytes_received = recv(client_socket, buffer, BUFFER_SIZE, 0);
+
+        // if (bytes_received < 0) {
+        //     // handle error
+        //     perror("Error receiving data");
+        //     exit(1);
+        // } else if (bytes_received == 0) {
+        //     // handle connection closed by remote peer
+        //     printf("Connection closed by remote peer\n");
+        //     exit(1);
+        // } else {
+        //     // do something with the received data
+        //     printf("Received %d bytes of data: %d\n", bytes_received, buffer[0]-48);
+        // }
+
+        int bytes_received = receive_byte(client_socket, buffer);
     }
 
-
-    // while (true) {
-    //     drive(0.1);
-
-    //     // loop yield for a bit
-    //     sleepApp(20);
-    // }
+    // close the sockets
+    close(client_socket);
+    // close(server_socket);
 
     return 0;
 }
