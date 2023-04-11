@@ -7,11 +7,11 @@
 #include <SDL2/SDL.h>
 #include <chrono>
 #include <iostream>
+#include <netinet/in.h>
 #include <string>
+#include <sys/socket.h>
 #include <thread>
 #include <unistd.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
 
 using namespace ctre::phoenix;
 using namespace ctre::phoenix::platform;
@@ -40,11 +40,11 @@ int create_listen_socket(int port) {
     setsockopt(listen_socket, SOL_SOCKET, SO_REUSEADDR, &reuse_addr, sizeof(reuse_addr));
 
     // Bind the socket to the address and port
-    struct sockaddr_in address{};
+    struct sockaddr_in address {};
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = htonl(INADDR_ANY);
     address.sin_port = htons(port);
-    bind(listen_socket, (struct sockaddr*)&address, sizeof(address));
+    bind(listen_socket, (struct sockaddr *) &address, sizeof(address));
 
     // Listen for incoming connections
     listen(listen_socket, SOMAXCONN);
@@ -62,7 +62,7 @@ int read_byte(int socket) {
 
     // If read was successful, return the byte as an int
     if (bytes_read == sizeof(buffer)) {
-        return (int)buffer[0];
+        return (int) buffer[0];
     }
 
     // If read failed or returned less than one byte, return -1 to indicate an error
