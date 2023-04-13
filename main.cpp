@@ -24,7 +24,7 @@ using Clock = std::chrono::steady_clock;
 TalonSRX cimMotor(1); // Use the specified interface
 
 void configureMotor() {
-    cimMotor.ConfigOpenloopRamp(5.0);
+    cimMotor.ConfigOpenloopRamp(1.0);
     cimMotor.SetNeutralMode(NeutralMode::Coast);
     cimMotor.ConfigNeutralDeadband(0.01);
 }
@@ -98,7 +98,7 @@ int main() {
     int wanted_state;
 
     auto start = Clock::now();
-    auto duration = 3000; // milliseconds
+    auto duration = 3000;          // milliseconds
     auto extended_duration = 6000; // milliseconds
 
     while (true) {
@@ -115,7 +115,7 @@ int main() {
 
         switch (current_state) {
             case 0: // Burst
-                drive(0.05);
+                drive(-0.30);
 
                 if (delta > duration) {
                     std::cout << "Done Burst" << std::endl;
@@ -123,7 +123,7 @@ int main() {
                 }
                 break;
             case 1: // Burst++
-                drive(0.07);
+                drive(-0.35);
 
                 if (delta > extended_duration) {
                     std::cout << "Done Burst++" << std::endl;
@@ -131,7 +131,7 @@ int main() {
                 }
                 break;
             case 2: // Uphill Burst
-                drive(0.1);
+                drive(-0.75);
 
                 if (delta > duration) {
                     std::cout << "Done Uphill Burst" << std::endl;
@@ -139,7 +139,7 @@ int main() {
                 }
                 break;
             case 3: // Uphill Burst++
-                drive(0.12);
+                drive(-1.0);
 
                 if (delta > extended_duration) {
                     std::cout << "Done Uphill Burst++" << std::endl;
@@ -153,6 +153,8 @@ int main() {
                 std::cout << "default case" << std::endl;
                 break;
         }
+
+        std::cout << cimMotor.GetBusVoltage() << std::endl;
 
         sleepApp(20);
     }
